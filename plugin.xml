@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+
+
+<extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipseplugins.impexeditor.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+  
+  <extension
+         point="org.eclipse.ui.preferencePages"  
+         id="impexEditorPreferences" 
+          >
+      <page
+            name="Impex Editor"
+            class="org.eclipseplugins.impexeditor.preferences.GeneralPreferencePage"
+            id="impexeditor.preferences.generalPreferencePage">
+      </page>   
+    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.resources.IFile"
+            adaptable="true"
+            nameFilter="*.impex"
+            id="org.impexeditor.eclipse.ui.validateProjectContribution">    
+         <menu
+               id="syncData"
+               icon="icons/hybris.ico"
+               label="Impex Editor">
+            <separator
+                  name="syncData">
+            </separator>
+         </menu>
+           <action
+               class="org.eclipseplugins.impexeditor.actions.RefreschDataAction"
+               icon="icons/hybris.ico"
+               id="impexeditor.actions.RestoreDbAction"
+               label="Refresh Impex Data Model"
+               menubarPath="syncData/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Refresh Data Model">
+         </action>
+         <action
+               class="org.eclipseplugins.impexeditor.actions.ValidateImpexAction"
+               icon="icons/hybris.ico"
+               id="impexeditor.actions.validateImpexAction"
+               label="Validate Impex"
+               menubarPath="syncData/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Validate Impex">
+         </action>
+     </objectContribution>
+     
+   </extension>
+
+ <extension
+         point="org.eclipse.core.runtime.contentTypes">
+         <content-type 
+			id="org.eclipse.core.runtime.impex"
+			name="Impex"
+			file-extensions="impex">
+			<describer class="org.eclipse.core.internal.content.TextContentDescriber"/>
+		</content-type>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Impex Editor"
+            extensions="impex"
+            icon="icons/impex.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.eclipseplugins.impexeditor.editors.ImpexEditor"
+            id="org.eclipseplugins.impexeditor.editors.ImpexEditor">
+            <contentTypeBinding contentTypeId="impex"/>
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+   </extension>
+   
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector"
+            id="org.eclipseplugins.impexeditor.hyperlink.impexcodehyperlinkdetector1"
+            name="Preferences"
+            targetId="org.eclipseplugins.impexeditor.editors.ImpexEditor">
+      </hyperlinkDetector>
+   </extension>
+
+ <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="org.eclipseplugins.impexeditor.editors.ImpexEditor"
+            name="ImpexLink">
+      </target>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            class="org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector"
+            id="org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector"
+            name="ImpexURLHyperlinkDetector"
+            targetId="org.eclipse.ui.DefaultTextEditor">
+      </hyperlinkDetector>
+   </extension>
+   
+</plugin>
