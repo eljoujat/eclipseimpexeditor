@@ -54,8 +54,11 @@ The auto-completion is the moste liked what the most user look for in any text e
 
 ## Install the plugin : 
 
-To install the plugin just copy [eclipseplugins](/labs/org.ucf.eclipseplugins.impexeditor_1.5.4.201505091329.jar) to the dropins folder under eclipse directory , and restart eclipse , and enjoy :) 
+To install the features contained here, press Help > Install New Software… in your Eclipse IDE and enter the URL [http://eljoujat.github.io/updates/](http://eljoujat.github.io/updates/).
 
+Or : 
+
+just copy the latest release  from here [impex editor relases ](https://github.com/eljoujat/eclipseimpexeditor/releases) to the dropins folder under eclipse directory , restart eclipse , and enjoy :) 
 
 
 ## What next: 
@@ -67,7 +70,6 @@ Other features i'm working on are :
 - Hyperlink features to easily locate where an Item is already valued from the same impex .
 - Find usage Features, find all usage for the selected definied and selected item . 
 - Formatting .
-
 
 
 > “I believe that there is always an other way to do it, and i hope that you let me know .”
