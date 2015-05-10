@@ -4,11 +4,6 @@
 .mtj.tmp/
 
 # Package Files #
-<<<<<<< HEAD
-=======
-*.jar
->>>>>>> 55f485fac9b1cfdc1ce6611e89983d0fccd4e0a0
-*.war
 *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
