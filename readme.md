@@ -8,7 +8,7 @@ The ruleset are based on the Hybris [Impex syntax documentation](https://wiki.hy
 
 
 Before : 
-![Before](/images/impex/avant.png)
+![Before](http://eljoujat.github.io/images/impex/avant.png)
 
 
 After : 
@@ -22,11 +22,11 @@ I also used the Preferences API to allow customisation, to give the more friendl
 
 It's possible to customize the feel and look of the Impex file:
 
-![Preference Snapshot](/images/impex/perferences_1.png) 
+![Preference Snapshot](http://eljoujat.github.io/images/impex/perferences_1.png) 
 
 And you can configure the connection with hybris, to execute and validate the impex with any running instance of hybris !
 
-![Preference Snapshot](/images/impex/perferences_2.png) 
+![Preference Snapshot](http://eljoujat.github.io/images/impex/perferences_2.png) 
 
 
 
@@ -49,7 +49,7 @@ To make a successful call the request should pass a crsf token, the token is ass
 # The coolest feature : Autocompletion .
 The auto-completion is the moste liked what the most user look for in any text editor, since i have stored the data deffinition, this feature was easy to implement as well : 
 
-![Preference Snapshot](/images/impex/autosuggest.png) 
+![Preference Snapshot](http://eljoujat.github.io/images/impex/autosuggest.png) 
 
 
 ## Install the plugin : 
