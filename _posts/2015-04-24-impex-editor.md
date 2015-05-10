@@ -1,9 +1,8 @@
 ---
 title: "Writing Hybris Impex with Style !"
-layout: post
+layout: default
 og_image_url: "http://eljoujat.github.io/images/impex/image004.jpg"
 description: "Writing Hybris Impex with style: An eclipse plugin that will change the way you work with Impex."
-disqus_comments: true
 ---
 
 
