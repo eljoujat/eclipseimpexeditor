@@ -32,7 +32,7 @@ public class ImpexEditor extends AbstractDecoratedTextEditor
 	{
 		colorManager = new ColorManager();
 		impexDataDeffinition = new ImpexDataDeffinition();
-		setSourceViewerConfiguration(new ImpexConfiguration(this, colorManager, impexDataDeffinition, getPreferenceStore()));
+		setSourceViewerConfiguration(new ImpexConfiguration(colorManager, impexDataDeffinition, getPreferenceStore()));
 		setDocumentProvider(new ImpexDocumentProvider());
 	}
 

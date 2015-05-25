@@ -67,7 +67,7 @@
 			<describer class="org.eclipse.core.internal.content.TextContentDescriber"/>
 		</content-type>
    </extension>
-
+   
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -82,36 +82,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
-   </extension>
-   
-   
-   <extension
-         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
-      <hyperlinkDetector
-            activate="true"
-            class="org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector"
-            id="org.eclipseplugins.impexeditor.hyperlink.impexcodehyperlinkdetector1"
-            name="Preferences"
-            targetId="org.eclipseplugins.impexeditor.editors.ImpexEditor">
-      </hyperlinkDetector>
-   </extension>
-
- <extension
-         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
-      <target
-            id="org.eclipseplugins.impexeditor.editors.ImpexEditor"
-            name="ImpexLink">
-      </target>
-   </extension>
-   
-   <extension
-         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
-      <hyperlinkDetector
-            class="org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector"
-            id="org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector"
-            name="ImpexURLHyperlinkDetector"
-            targetId="org.eclipse.ui.DefaultTextEditor">
-      </hyperlinkDetector>
    </extension>
    
 </plugin>

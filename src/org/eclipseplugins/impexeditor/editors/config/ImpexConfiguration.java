@@ -18,7 +18,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
-import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
@@ -32,7 +31,6 @@ import org.eclipseplugins.impexeditor.editors.ImpexPartitionScanner;
 import org.eclipseplugins.impexeditor.editors.ImpexScanner;
 import org.eclipseplugins.impexeditor.editors.NonRuleBasedDamagerRepairer;
 import org.eclipseplugins.impexeditor.editors.completion.ImpexCompletionProposalComputer;
-import org.eclipseplugins.impexeditor.hyperlink.ImpexCodeHyperlinkDetector;
 
 
 public class ImpexConfiguration extends TextSourceViewerConfiguration
@@ -40,19 +38,17 @@ public class ImpexConfiguration extends TextSourceViewerConfiguration
 	private ImpexScanner scanner;
 	private final ColorManager colorManager;
 	private ImpexDataDeffinition impexDataDeffinition;
-	private ImpexEditor editor;
 
 	public ImpexConfiguration(final ColorManager colorManager)
 	{
 		this.colorManager = colorManager;
 	}
 
-	public ImpexConfiguration(final ImpexEditor editor, final ColorManager colorManager,
+	public ImpexConfiguration(final ColorManager colorManager,
 			final ImpexDataDeffinition impexDataDeffinition,
 			final IPreferenceStore preferenceStore)
 	{
 		super(preferenceStore);
-		this.editor = editor;
 		this.colorManager = colorManager;
 		this.impexDataDeffinition = impexDataDeffinition;
 
@@ -80,14 +76,6 @@ public class ImpexConfiguration extends TextSourceViewerConfiguration
 		return assistant;
 	}
 
-	@Override
-	public IHyperlinkDetector[] getHyperlinkDetectors(final ISourceViewer sourceViewer)
-	{
-		return new IHyperlinkDetector[]
-		{
-				new ImpexCodeHyperlinkDetector(editor)
-		};
-	}
 
 	protected ImpexScanner getXMLScanner()
 	{

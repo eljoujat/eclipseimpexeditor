@@ -71,5 +71,3 @@ Other features i'm working on are :
 - Find usage Features, find all usage for the selected definied and selected item . 
 - Formatting .
 
-
-> “I believe that there is always an other way to do it, and i hope that you let me know .”
