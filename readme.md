@@ -1,6 +1,9 @@
 
+# Eclipse Impex Editor
 
-# Syntax highlighting: 
+<a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=2331084" class="drag" title="Drag to your running Eclipse workspace to install Hybris Impex Editor"><img src="http://marketplace.eclipse.org/sites/all/themes/solstice/_themes/solstice_marketplace/public/images/btn-install.png" alt="Drag to your running Eclipse workspace to install Hybris Impex Editor" /></a>
+
+## Syntax highlighting: 
 
 The Syntax highlighting feature uses the rule based scanner class ;  the scanner toos a givent number of rule, it cosume the impex file and evalute each token, if the token match a rule , the scanner exit with the correspondant properties. 
 
@@ -16,7 +19,7 @@ After :
 ![After](http://eljoujat.github.io/images/impex/after.png)
 
 
-# Preferences Of the plugins : 
+## Preferences Of the plugins : 
 
 I also used the Preferences API to allow customisation, to give the more friendly user experience. 
 
@@ -30,13 +33,13 @@ And you can configure the connection with hybris, to execute and validate the im
 
 
 
-# Detecting hyrbis Item and attributes : 
+## Detecting hyrbis Item and attributes : 
 
 The first time eclipse run, the plugin connect to a the already configured running hybris instance (by default the localhost),call the Rest Webservice `allItems` , and `allAttributes` (exposed by hybris) and store the information to avoid call the web service again. 
 
 To detect newly added Items or attributes, I Implementer an action to refresh the already stored data definition. 
 
-# A challenge and a new techniques acquired :  
+## A challenge and a new techniques acquired :  
 
 The web services exposed by hybris require a registered hybris account and it's secured against [Cross-site request forgery](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
 
@@ -46,7 +49,7 @@ To make a successful call the request should pass a crsf token, the token is ass
 - Use jsoup with the stored JSESSIONID, and get the crsf token from the html.
 - Make a Rest Call to retrieve the Items and attributes definition.
 
-# The coolest feature : Autocompletion .
+## The coolest feature : Autocompletion .
 The auto-completion is the moste liked what the most user look for in any text editor, since i have stored the data deffinition, this feature was easy to implement as well : 
 
 ![Preference Snapshot](http://eljoujat.github.io/images/impex/autosuggest.png) 
