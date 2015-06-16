@@ -56,6 +56,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		PreferenceConverter.setDefault(store, PreferenceConstants.IMPEX_HEADER_TYPE_COLOR, new RGB(1, 223, 1));
 		PreferenceConverter.setDefault(store, PreferenceConstants.IMPEX_MODIFIER_COLOR, new RGB(255, 0, 255));
 		PreferenceConverter.setDefault(store, PreferenceConstants.IMPEX_VARIABLE_COLOR, new RGB(0, 191, 255));
+		PreferenceConverter.setDefault(store, PreferenceConstants.IMPEX_COMMENTS_COLOR, new RGB(165, 42, 42));
+		
 		
 		
 		

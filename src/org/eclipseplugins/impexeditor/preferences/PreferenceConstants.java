@@ -61,6 +61,7 @@ public class PreferenceConstants {
 	public static final String IMPEX_MODIFIER_COLOR ="IMPEX_MODIFIER";
 	public static final String IMPEX_SEPARATOR_COLOR = "IMPEX_SEPARATOR";
 	public static final String IMPEX_ATOMIC_COLOR= "IMPEX_ATOMIC";
+	public static final String IMPEX_COMMENTS_COLOR= "IMPEX_COMMENTS";
 	
 	
 	

@@ -13,7 +13,10 @@
 package org.eclipseplugins.impexeditor.editors.config;
 
 
+import impexeditor.Activator;
+
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
@@ -31,6 +34,7 @@ import org.eclipseplugins.impexeditor.editors.ImpexPartitionScanner;
 import org.eclipseplugins.impexeditor.editors.ImpexScanner;
 import org.eclipseplugins.impexeditor.editors.NonRuleBasedDamagerRepairer;
 import org.eclipseplugins.impexeditor.editors.completion.ImpexCompletionProposalComputer;
+import org.eclipseplugins.impexeditor.preferences.PreferenceConstants;
 
 
 public class ImpexConfiguration extends TextSourceViewerConfiguration
@@ -38,6 +42,7 @@ public class ImpexConfiguration extends TextSourceViewerConfiguration
 	private ImpexScanner scanner;
 	private final ColorManager colorManager;
 	private ImpexDataDeffinition impexDataDeffinition;
+	IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
 	public ImpexConfiguration(final ColorManager colorManager)
 	{
@@ -100,7 +105,7 @@ public class ImpexConfiguration extends TextSourceViewerConfiguration
 		final NonRuleBasedDamagerRepairer ndr =
 				new NonRuleBasedDamagerRepairer(
 						new TextAttribute(
-								colorManager.getColor(ImpexColorConstants.XML_COMMENT)));
+								colorManager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_COMMENTS_COLOR))));
 		reconciler.setDamager(ndr, ImpexPartitionScanner.IMPEX_COMMENT);
 		reconciler.setRepairer(ndr, ImpexPartitionScanner.IMPEX_COMMENT);
 		return reconciler;

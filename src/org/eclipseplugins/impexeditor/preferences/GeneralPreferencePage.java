@@ -78,6 +78,10 @@ public class GeneralPreferencePage
 		addField(
 				new ColorFieldEditor(PreferenceConstants.IMPEX_VARIABLE_COLOR, "Variable :", getFieldEditorParent()));	
 		
+		addField(
+				new ColorFieldEditor(PreferenceConstants.IMPEX_COMMENTS_COLOR, "Comments :", getFieldEditorParent()));	
+		
+		
 	}
 
 	
