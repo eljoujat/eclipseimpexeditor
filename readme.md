@@ -5,7 +5,7 @@
 
 ## Syntax highlighting: 
 
-The Syntax highlighting feature uses the rule based scanner class ;  the scanner toos a givent number of rule, it cosume the impex file and evalute each token, if the token match a rule , the scanner exit with the correspondant properties. 
+The Syntax highlighting feature uses the rule based scanner class. The scanner takes a givent number of rules, and cosumes the impex file and evalutes each token. If the token matches a rule, the scanner exits with the corresponding properties. 
 
 The ruleset are based on the Hybris [Impex syntax documentation](https://wiki.hybris.com/display/release5/ImpEx+Syntax)
 
@@ -66,7 +66,7 @@ just copy the latest release  from here [impex editor relases ](https://github.c
 
 ## What next: 
 
-Other features i'm working on are : 
+Other features I'm working on are : 
 
 - Validate the impex with error markers.
 - Execute the impex .
