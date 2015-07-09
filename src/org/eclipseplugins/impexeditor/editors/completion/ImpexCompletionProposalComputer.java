@@ -110,7 +110,7 @@ public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 
 		for (final String keywords : ImpexColorConstants.IMPEX_KEYWORDS.keySet())
 		{
-			if (keywords.startsWith(searchPrefix) && !result.contains(keywords))
+			if (keywords.toUpperCase().startsWith(searchPrefix.toUpperCase()) && !result.contains(keywords))
 			{
 				result.add(keywords);
 				final Image image = Activator.getDefault().getImageRegistry().get(ImpexColorConstants.KEYWORD_IMAGE_ID);
@@ -119,7 +119,7 @@ public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 		}
 		for (final String headerTyp : impexDataDeffinition.getImpexDataDef().keySet())
 		{
-			if (headerTyp.startsWith(searchPrefix) && !result.contains(headerTyp))
+			if (headerTyp.toUpperCase().startsWith(searchPrefix.toUpperCase()) && !result.contains(headerTyp))
 			{
 				final Image image = Activator.getDefault().getImageRegistry().get(ImpexColorConstants.TYPE_IMAGE_ID);
 				proposals.add(createProposal(documentOffset, searchPrefix, headerTyp, info, image));
@@ -128,7 +128,7 @@ public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 			for (final JsonValue string : impexDataDeffinition.getImpexDataDef().get(
 					headerTyp))
 			{
-				if (string.asString().startsWith(searchPrefix) && !result.contains(string.asString()))
+				if (string.asString().toUpperCase().startsWith(searchPrefix.toUpperCase()) && !result.contains(string.asString()))
 				{
 					final Image image = Activator.getDefault().getImageRegistry().get(ImpexColorConstants.TYPE_IMAGE_ID);
 					proposals.add(createProposal(documentOffset, searchPrefix, string.asString(), info, image));
@@ -138,7 +138,7 @@ public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 
 			for (final String var : impexDataDeffinition.getDecalredVariables())
 			{
-				if (var.startsWith(searchPrefix) && !result.contains(var))
+				if (var.toUpperCase().startsWith(searchPrefix.toUpperCase()) && !result.contains(var))
 				{
 					final Image image = Activator.getDefault().getImageRegistry().get(ImpexColorConstants.TYPE_IMAGE_ID);
 					proposals.add(createProposal(documentOffset, searchPrefix, var, info, image));
