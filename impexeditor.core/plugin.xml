@@ -77,7 +77,7 @@
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.eclipseplugins.impexeditor.core.editor.ImpexEditor"
             id="org.eclipseplugins.impexeditor.core.editor.ImpexEditor">
-            <contentTypeBinding contentTypeId="impex"/>
+            <contentTypeBinding contentTypeId="org.eclipse.core.runtime.impex"/>
       </editor>
    </extension>
    <extension
