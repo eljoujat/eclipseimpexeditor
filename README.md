@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/eljoujat/eclipseimpexeditor.svg?branch=master)](https://travis-ci.org/eljoujat/eclipseimpexeditor)
 
 # Eclipse Impex Editor
 
