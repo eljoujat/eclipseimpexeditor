@@ -6,7 +6,7 @@
 # Package Files #
 <<<<<<< HEAD
 =======
-*.jar
+#*.jar
 >>>>>>> 55f485fac9b1cfdc1ce6611e89983d0fccd4e0a0
 *.war
 *.ear
