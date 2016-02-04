@@ -7,8 +7,11 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>impexeditor.site</artifactId>
-	<packaging>eclipse-repository</packaging>
 	<name>impexeditor :: update site</name>
 	<groupId>ucf.lab.hybris</groupId>
 	<version>1.0.0</version>
+	<issueManagement>
+		<system>git</system>
+	</issueManagement>
+	<packaging>eclipse-repository</packaging>
 </project>
