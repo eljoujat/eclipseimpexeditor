@@ -84,4 +84,29 @@
          point="org.eclipse.ui.commands">
    </extension>
    
+   <extension
+         id="id1"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.eclipseplugins.impexeditor.formatter.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="Formatter.id1"
+            name="Headless Example">
+         <property
+               name="appName"
+               value="Headless Example">
+         </property>
+      </product>
+   </extension>
+   
 </plugin>

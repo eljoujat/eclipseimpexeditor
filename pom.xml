@@ -23,6 +23,20 @@
 
 	</properties>
 
+	<scm>
+		<connection>scm:git:https://github.com/eljoujat/eclipseimpexeditor.git</connection>
+		<developerConnection>scm:git:git@github.com:eljoujat/eclipseimpexeditor.git</developerConnection>
+		<url>https://github.com/eljoujat/eclipseimpexeditor</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>bintray</id>
+			<url>https://api.bintray.com/maven/{bintray-user}/{bintray-repo}/{package}</url>
+		</repository>
+	</distributionManagement>
+
 	<repositories>
 		<repository>
 			<id>luna</id>
@@ -168,13 +182,13 @@
 			</build>
 		</profile>
 	</profiles>
-	 <dependencies>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0</version>
-    </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.tycho</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+			<version>3.8.0.v_C03</version>
+			</dependency>
+	</dependencies>
 	<modules>
 		<module>impexeditor.core</module>
 		<module>impexeditor.test</module>

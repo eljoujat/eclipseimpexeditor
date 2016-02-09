@@ -8,7 +8,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
-  org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.workbench.texteditor
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
@@ -17,5 +17,7 @@ Bundle-ClassPath: .,
  lib/httpclient-4.2.jar,
  lib/httpcore-4.2.jar,
  lib/minimal-json-0.9.1.jar,
- lib/jsoup-1.8.1.jar
+ lib/jsoup-1.8.1.jar,
+ lib/commons-io-2.3.jar,
+ lin/org.eclipse.jdt.core-3.8.0.v_C03.jar
 
