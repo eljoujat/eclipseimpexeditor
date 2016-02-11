@@ -15,6 +15,8 @@ package org.eclipseplugins.impexeditor.core.editor.autocompletion;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -35,7 +37,9 @@ import com.eclipsesource.json.JsonValue;
 
 public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 {
+	
 
+	private static final ILog logger = Activator.getDefault().getLog();
 	private static final ICompletionProposal[] NO_PROPOSALS = new ICompletionProposal[0];
 
 	private final ImpexDataDefinition impexDataDefinition;
@@ -152,7 +156,6 @@ public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 	public IContextInformation[] computeContextInformation(final ITextViewer arg0,
 			final int arg1)
 	{
-		System.out.println("computeContextInformation :");
 		return null;
 	}
 
