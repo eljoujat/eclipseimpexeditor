@@ -54,6 +54,15 @@
                toolbarPath="sampleGroup"
                tooltip="Validate Impex">
          </action>
+          <action
+               class="org.eclipseplugins.impexeditor.core.actions.FormatFile"
+               icon="icons/hybris.ico"
+               id="impexeditor.actions.FormatFile"
+               label="FormatFile Impex"
+               menubarPath="syncData/sampleGroup"
+               toolbarPath="sampleGroup"
+               tooltip="Format File Impex">
+         </action>
      </objectContribution>
      
    </extension>
@@ -83,30 +92,4 @@
    <extension
          point="org.eclipse.ui.commands">
    </extension>
-   
-   <extension
-         id="id1"
-         point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            thread="main"
-            visible="true">
-         <run
-               class="org.eclipseplugins.impexeditor.formatter.Application">
-         </run>
-      </application>
-   </extension>
-   <extension
-         id="product"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="Formatter.id1"
-            name="Headless Example">
-         <property
-               name="appName"
-               value="Headless Example">
-         </property>
-      </product>
-   </extension>
-   
 </plugin>
