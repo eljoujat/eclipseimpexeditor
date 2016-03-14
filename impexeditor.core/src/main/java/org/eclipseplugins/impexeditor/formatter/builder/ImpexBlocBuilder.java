@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipseplugins.impexeditor.formatter.dto.EntryData;
-import org.eclipseplugins.impexeditor.formatter.dto.ImpexBloc;
-import org.eclipseplugins.impexeditor.formatter.dto.ImpexLine;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.EntryData;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.ImpexBloc;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.ImpexLine;
 
 public class ImpexBlocBuilder {
 

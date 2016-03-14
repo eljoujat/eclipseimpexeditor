@@ -1,4 +1,4 @@
-package org.eclipseplugins.impexeditor.formatter.dto;
+package org.eclipseplugins.impexeditor.formatter.dto.impex;
 
 import java.util.List;
 import java.util.Map;

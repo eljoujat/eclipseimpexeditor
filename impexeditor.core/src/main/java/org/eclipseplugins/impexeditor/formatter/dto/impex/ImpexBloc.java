@@ -1,10 +1,12 @@
-package org.eclipseplugins.impexeditor.formatter.dto;
+package org.eclipseplugins.impexeditor.formatter.dto.impex;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ImpexBloc {
+import org.eclipseplugins.impexeditor.formatter.dto.AbstractBloc;
+
+public class ImpexBloc  extends AbstractBloc{
 
 	List<ImpexLine> lines;
 	ImpexLine header;

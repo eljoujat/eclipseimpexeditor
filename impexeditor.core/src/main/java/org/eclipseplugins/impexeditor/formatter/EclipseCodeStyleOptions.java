@@ -45,8 +45,8 @@ public class EclipseCodeStyleOptions {
 	/**
 	 * Return data structure compatible with @see JavaCore.getOptions
 	 */
-	public static Hashtable getCodeStyleSettingOptions(File codeStyleFile) {
-		Map codeStyleOptions = null;
+	public static Hashtable<Object, Object> getCodeStyleSettingOptions(File codeStyleFile) {
+		Map<?, ?> codeStyleOptions = null;
 		try {
 			codeStyleOptions = getCodeStyleEntries(codeStyleFile);
 		} catch (SAXException e) {
@@ -56,7 +56,7 @@ public class EclipseCodeStyleOptions {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Hashtable options = new Hashtable<>();
+		Hashtable<Object, Object> options = new Hashtable<>();
 		// Hashtable options = JavaCore.getOptions();
 
 		options.putAll(codeStyleOptions);

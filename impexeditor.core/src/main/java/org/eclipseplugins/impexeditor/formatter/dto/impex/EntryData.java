@@ -1,4 +1,4 @@
-package org.eclipseplugins.impexeditor.formatter.dto;
+package org.eclipseplugins.impexeditor.formatter.dto.impex;
 
 public class EntryData {
 

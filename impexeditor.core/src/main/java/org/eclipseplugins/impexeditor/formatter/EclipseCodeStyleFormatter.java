@@ -16,8 +16,8 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipseplugins.impexeditor.core.config.ImpexDataDefinition;
 import org.eclipseplugins.impexeditor.formatter.builder.EntryBuilder;
 import org.eclipseplugins.impexeditor.formatter.builder.ImpexBlocBuilder;
-import org.eclipseplugins.impexeditor.formatter.dto.EntryData;
-import org.eclipseplugins.impexeditor.formatter.dto.ImpexBloc;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.EntryData;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.ImpexBloc;
 
 public class EclipseCodeStyleFormatter {
 
@@ -32,7 +32,8 @@ public class EclipseCodeStyleFormatter {
 
 	public static String format(String code, File eclipseCodeStyleFile, int lineLength) {
 		IDocument document = new Document(code);
-		Hashtable codeStyleOptions = EclipseCodeStyleOptions.getCodeStyleSettingOptions(eclipseCodeStyleFile);
+		Hashtable<Object, Object> codeStyleOptions = EclipseCodeStyleOptions
+				.getCodeStyleSettingOptions(eclipseCodeStyleFile);
 
 		if (lineLength > 0) {
 			codeStyleOptions.put(EclipseCodeStyleOptions.lineLengthKey, Integer.toString(lineLength));
@@ -45,8 +46,9 @@ public class EclipseCodeStyleFormatter {
 			int indentationLevel = 0;
 			TextEdit edit = formatter.format(CodeFormatter.K_UNKNOWN | CodeFormatter.F_INCLUDE_COMMENTS, code, 0,
 					code.length(), indentationLevel, null);
-			if (edit != null)
+			if (edit != null) {
 				edit.apply(document);
+			}
 		} catch (MalformedTreeException e) {
 			e.printStackTrace();
 		} catch (BadLocationException e) {
@@ -57,7 +59,9 @@ public class EclipseCodeStyleFormatter {
 	}
 
 	public String format(String content, ImpexDataDefinition impexDataDefinition) {
-		content = content.replace("\n", "");
+
+		String impexContent = extractImpexContent(content);
+		content = impexContent.replaceAll("\r|\n", "");
 		String[] entries = content.split(";");
 		EntryBuilder entryBuilder = new EntryBuilder(impexDataDefinition);
 		LinkedList<EntryData> entriesData = new LinkedList<>();
@@ -68,13 +72,18 @@ public class EclipseCodeStyleFormatter {
 			nbrOfEntriePerLine = entryData.isHeader() ? nbrOfEntriePerLine + 1 : nbrOfEntriePerLine;
 			entriesData.add(entryData);
 		}
-
 		ImpexBlocBuilder blocBuilder = new ImpexBlocBuilder();
 		int nbrOfLines = entriesData.size() / (nbrOfEntriePerLine - 1);
 		ImpexBloc impexBloc = blocBuilder.buildImpexBloc(entriesData, nbrOfEntriePerLine - 1, nbrOfLines);
 		return impexBloc.toString();
 
 	}
+
+	private String extractImpexContent(final String content) {
+		String contentwihtNocomments = content.replaceAll("#.*", "");
+		return contentwihtNocomments.replaceAll("\n\\$.*", "");
+	}
+
 
 	String findItemType(String[] entries, ImpexDataDefinition impexDataDefinition) {
 

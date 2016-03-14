@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipseplugins.impexeditor.formatter.dto.EntryData;
-import org.eclipseplugins.impexeditor.formatter.dto.ImpexLine;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.EntryData;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.ImpexLine;
 
 public class ImpexLineBuilder {
 
@@ -13,7 +13,7 @@ public class ImpexLineBuilder {
 		Boolean isHeader = null;
 		ImpexLine impexLine = new ImpexLine();
 		List<EntryData> lineEntries = new ArrayList<>();
-		for (int i = 0; i < nbrOfEntries-1; i++) {
+		for (int i = 0; i < nbrOfEntries; i++) {
 			EntryData entry = entriesData.pollFirst();
 			if(entry==null) continue;
 			isHeader =isHeader==null? entry.isHeader():isHeader;

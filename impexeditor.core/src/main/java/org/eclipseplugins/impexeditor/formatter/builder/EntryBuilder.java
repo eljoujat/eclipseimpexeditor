@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import org.eclipseplugins.impexeditor.core.config.ImpexDataDefinition;
 import org.eclipseplugins.impexeditor.core.editor.ImpexColorConstants;
-import org.eclipseplugins.impexeditor.formatter.dto.EntryData;
+import org.eclipseplugins.impexeditor.formatter.dto.impex.EntryData;
 
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonValue;
@@ -22,9 +22,9 @@ public class EntryBuilder {
 
 	public EntryData buildEntryData(String rawEntry,String impexType) {
 		EntryData entryData = new EntryData();
-		entryData.setHeader(isHeaderColumn(rawEntry,impexType));
 		entryData.setEmpty(rawEntry == null || rawEntry.isEmpty());
-		entryData.setValue(rawEntry);
+		entryData.setValue(rawEntry.replaceAll("\\n+|\\r+", ""));
+		entryData.setHeader(isHeaderColumn(rawEntry,impexType));
 		return entryData;
 	}
 
