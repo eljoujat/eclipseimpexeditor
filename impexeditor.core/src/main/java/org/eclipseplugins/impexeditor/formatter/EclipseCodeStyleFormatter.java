@@ -1,8 +1,10 @@
 package org.eclipseplugins.impexeditor.formatter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +27,7 @@ public class EclipseCodeStyleFormatter {
 	public static String FILE_VERTICALLY_LONG_STYLE = dir + "vertically-long.xml";
 	public static String FILE_ECLIPSE_BUILT_IN_STYLE = dir + "eclipse-built-in.xml";
 	public static String FILE_COMPACT_STYLE = dir + "compact.xml";
+	static public final String WITH_DELIMITER = "(?=%1$s)";
 
 	public static String format(String code, File eclipseCodeStyleFile) {
 		return format(code, eclipseCodeStyleFile, -1);
@@ -62,20 +65,41 @@ public class EclipseCodeStyleFormatter {
 
 		String impexContent = extractImpexContent(content);
 		content = impexContent.replaceAll("\r|\n", "");
-		String[] entries = content.split(";");
+		String[] rawimpexBlocs = content.split(String.format(WITH_DELIMITER, "INSERT|UPDATE|INSERT_UPDATE|REMOVE"));
 		EntryBuilder entryBuilder = new EntryBuilder(impexDataDefinition);
-		LinkedList<EntryData> entriesData = new LinkedList<>();
-		int nbrOfEntriePerLine = 0;
-		String itemType = findItemType(entries, impexDataDefinition);
-		for (String rawEntry : entries) {
-			EntryData entryData = entryBuilder.buildEntryData(rawEntry, itemType);
-			nbrOfEntriePerLine = entryData.isHeader() ? nbrOfEntriePerLine + 1 : nbrOfEntriePerLine;
-			entriesData.add(entryData);
+		List<ImpexBloc> impexBlocs = new ArrayList<>();
+
+		for (int i = 0; i < rawimpexBlocs.length; i++) {
+			String rawImpexBloc = rawimpexBlocs[i];
+			String[] entries = rawImpexBloc.split(";");
+			if (entries.length < 2)
+				continue;
+			LinkedList<EntryData> entriesData = new LinkedList<>();
+			int nbrOfEntriePerLineTemp = 0;
+			int nbrOfEntriePerLine = 0;
+			String itemType = findItemType(entries, impexDataDefinition);
+			System.out.println("Processing Bloc " + i + " Item type is " + itemType);
+			for (String rawEntry : entries) {
+				EntryData entryData = entryBuilder.buildEntryData(rawEntry, itemType);
+				if (nbrOfEntriePerLine > 0) {
+					entryData.setHeader(false);
+				}
+				if (entryData.isHeader()) {
+					nbrOfEntriePerLineTemp = nbrOfEntriePerLineTemp + 1;
+				} else {
+					nbrOfEntriePerLine = nbrOfEntriePerLineTemp;
+				}
+
+				entriesData.add(entryData);
+
+			}
+			ImpexBlocBuilder blocBuilder = new ImpexBlocBuilder();
+			int nbrOfLines = entriesData.size() / (nbrOfEntriePerLine - 1);
+			ImpexBloc impexBloc = blocBuilder.buildImpexBloc(entriesData, nbrOfEntriePerLine - 1, nbrOfLines);
+			impexBlocs.add(impexBloc);
 		}
-		ImpexBlocBuilder blocBuilder = new ImpexBlocBuilder();
-		int nbrOfLines = entriesData.size() / (nbrOfEntriePerLine - 1);
-		ImpexBloc impexBloc = blocBuilder.buildImpexBloc(entriesData, nbrOfEntriePerLine - 1, nbrOfLines);
-		return impexBloc.toString();
+
+		return impexBlocs.toString();
 
 	}
 
@@ -84,14 +108,19 @@ public class EclipseCodeStyleFormatter {
 		return contentwihtNocomments.replaceAll("\n\\$.*", "");
 	}
 
+	boolean isImpexCmd(String entryValue) {
+		String findItemRegex = "(INSERT|UPDATE|INSERT_UPDATE|REMOVE){1} [a-zA-Z0-9$_]+";
+		Pattern pattern = Pattern.compile(findItemRegex);
+		Matcher matcher = pattern.matcher(entryValue.toUpperCase());
+		return matcher.find();
+	}
 
 	String findItemType(String[] entries, ImpexDataDefinition impexDataDefinition) {
-
 		String findItemRegex = "(INSERT|UPDATE|INSERT_UPDATE|REMOVE){1} [a-zA-Z0-9$_]+";
 		Pattern pattern = Pattern.compile(findItemRegex);
 		for (int i = 0; i < entries.length; i++) {
 			Matcher matcher = pattern.matcher(entries[i].toUpperCase());
-			if (matcher.find()) {
+			while (matcher.find()) {
 				return matcher.group(0).split(" ")[1];
 			}
 		}

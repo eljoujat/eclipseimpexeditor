@@ -58,8 +58,10 @@ public class EntryBuilder {
 			}
 		}
 
+		if(entry.startsWith("$")) return true;
+
 		for (final String var : impexDataDefinition.getDecalredVariables()) {
-			if (var.toUpperCase().equals(entry.toUpperCase()) && !result.contains(var)) {
+			if (var.toUpperCase().equals(entry.toUpperCase()) || entry.startsWith("$")) {
 				return true;
 			}
 		}
