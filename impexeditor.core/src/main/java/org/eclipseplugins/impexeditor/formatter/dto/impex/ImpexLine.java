@@ -7,9 +7,9 @@ public class ImpexLine {
 
 	boolean isHeader;
 	List<EntryData> entries;
-	
+
 	int lineNubmer;
-	
+
 
 	public List<EntryData> getEntries() {
 		return entries;
@@ -27,7 +27,7 @@ public class ImpexLine {
 		this.isHeader = isHeader;
 	}
 
-	
+
 	public String format(Map<Integer, Integer> maxLengthPerColumn) {
 		StringBuffer sb=new StringBuffer();
 		if(!isHeader()){
@@ -39,14 +39,14 @@ public class ImpexLine {
 			int maxLenght=maxLengthPerColumn.get(columnIndex);
 			String dataEntryString = entryData.appendNSpace(maxLenght+2);
 			sb.append(dataEntryString);
-			sb.append(generateNSpace(maxLenght-dataEntryString.length()+2));
+			//sb.append(generateNSpace(maxLenght-dataEntryString.length()+2));
 		}
-		
+
 		return sb.toString();
 	}
-	
-	
-	
+
+
+
 	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -63,5 +63,5 @@ public class ImpexLine {
 		}
 		return sb.toString();
 	}
-	
+
 }

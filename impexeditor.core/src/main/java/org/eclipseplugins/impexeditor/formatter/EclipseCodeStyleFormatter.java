@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +19,10 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipseplugins.impexeditor.core.config.ImpexDataDefinition;
 import org.eclipseplugins.impexeditor.formatter.builder.EntryBuilder;
 import org.eclipseplugins.impexeditor.formatter.builder.ImpexBlocBuilder;
+import org.eclipseplugins.impexeditor.formatter.dto.AbstractBloc;
 import org.eclipseplugins.impexeditor.formatter.dto.impex.EntryData;
 import org.eclipseplugins.impexeditor.formatter.dto.impex.ImpexBloc;
+import org.eclipseplugins.impexeditor.formatter.dto.variables.VariableBloc;
 
 public class EclipseCodeStyleFormatter {
 
@@ -63,44 +66,60 @@ public class EclipseCodeStyleFormatter {
 
 	public String format(String content, ImpexDataDefinition impexDataDefinition) {
 
-		String impexContent = extractImpexContent(content);
-		content = impexContent.replaceAll("\r|\n", "");
-		String[] rawimpexBlocs = content.split(String.format(WITH_DELIMITER, "INSERT|UPDATE|INSERT_UPDATE|REMOVE"));
-		EntryBuilder entryBuilder = new EntryBuilder(impexDataDefinition);
-		List<ImpexBloc> impexBlocs = new ArrayList<>();
+		Scanner scanner = new Scanner(content);
+		List<AbstractBloc> impexBlocs = new ArrayList<>();
+		StringBuilder sb=new StringBuilder();
+		while (scanner.hasNext()) {
+			String bloc = scanner.useDelimiter(
+					String.format(WITH_DELIMITER, "(?m)^\\$.*$|(?m)^#.*$|INSERT_UPDATE|INSERT.*(?<!_)$|(?<!_)UPDATE|REMOVE"))
+					.next();
+			if(isImpexCmd(bloc)){
+				String impexContent = extractImpexContent(bloc);
+				String rawImpexBloc = impexContent.replaceAll("\r|\n", "");
+				EntryBuilder entryBuilder = new EntryBuilder(impexDataDefinition);
+				String[] entries = rawImpexBloc.split(";");
+				LinkedList<EntryData> entriesData = new LinkedList<>();
+				int nbrOfEntriePerLineTemp = 0;
+				int nbrOfEntriePerLine = 0;
+				String itemType = findItemType(entries, impexDataDefinition);
+				for (String rawEntry : entries) {
+					EntryData entryData = entryBuilder.buildEntryData(rawEntry, itemType);
+					if (nbrOfEntriePerLine > 0) {
+						entryData.setHeader(false);
+					}
+					if (entryData.isHeader()) {
+						nbrOfEntriePerLineTemp = nbrOfEntriePerLineTemp + 1;
+					} else {
+						nbrOfEntriePerLine = nbrOfEntriePerLineTemp;
+					}
 
-		for (int i = 0; i < rawimpexBlocs.length; i++) {
-			String rawImpexBloc = rawimpexBlocs[i];
-			String[] entries = rawImpexBloc.split(";");
-			if (entries.length < 2)
-				continue;
-			LinkedList<EntryData> entriesData = new LinkedList<>();
-			int nbrOfEntriePerLineTemp = 0;
-			int nbrOfEntriePerLine = 0;
-			String itemType = findItemType(entries, impexDataDefinition);
-			System.out.println("Processing Bloc " + i + " Item type is " + itemType);
-			for (String rawEntry : entries) {
-				EntryData entryData = entryBuilder.buildEntryData(rawEntry, itemType);
-				if (nbrOfEntriePerLine > 0) {
-					entryData.setHeader(false);
+					entriesData.add(entryData);
+
 				}
-				if (entryData.isHeader()) {
-					nbrOfEntriePerLineTemp = nbrOfEntriePerLineTemp + 1;
-				} else {
-					nbrOfEntriePerLine = nbrOfEntriePerLineTemp;
-				}
-
-				entriesData.add(entryData);
-
+				ImpexBlocBuilder blocBuilder = new ImpexBlocBuilder();
+				int nbrOfLines = entriesData.size() / (nbrOfEntriePerLine - 1);
+				ImpexBloc impexBloc = blocBuilder.buildImpexBloc(entriesData, nbrOfEntriePerLine - 1, nbrOfLines);
+				sb.append("\n");
+				sb.append(impexBloc.toString());
+				impexBlocs.add(impexBloc);
+			}else if(isVariableBloc(bloc)){
+				sb.append(VariableBloc.buildVariableBloc(bloc));
+			}else{
+				sb.append(bloc);
 			}
-			ImpexBlocBuilder blocBuilder = new ImpexBlocBuilder();
-			int nbrOfLines = entriesData.size() / (nbrOfEntriePerLine - 1);
-			ImpexBloc impexBloc = blocBuilder.buildImpexBloc(entriesData, nbrOfEntriePerLine - 1, nbrOfLines);
-			impexBlocs.add(impexBloc);
+
 		}
+		scanner.close();
+		return sb.toString();
+	}
 
-		return impexBlocs.toString();
 
+
+	private boolean isVariableBloc(String bloc) {
+		String findItemRegex = "(?m)^\\$.*$";
+		Pattern pattern = Pattern.compile(findItemRegex);
+		Matcher matcher = pattern.matcher(bloc.toUpperCase());
+		return matcher.find();
 	}
 
 	private String extractImpexContent(final String content) {
