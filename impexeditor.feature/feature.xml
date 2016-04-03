@@ -2,7 +2,7 @@
 <feature
       id="impexeditor.feature"
       label="impexeditor Feature"
-      version="1.0.0">
+      version="1.6.0">
 
    <description url="https://github.com/eljoujat/eclipseimpexeditor">
       Impex is a hybris specific language in top of SQL to import/export
@@ -34,7 +34,7 @@ THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRES
          id="impexeditor.core"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="1.6.0"
          unpack="false"/>
 
 </feature>
