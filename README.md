@@ -1,4 +1,4 @@
-# Eclipse Impex Editor : an eclipse plugin for the platform hybris. 
+# Eclipse Impex Editor : an eclipse plugin for  SAP-hybris e-commerce platform. 
 
 [![Build Status](https://travis-ci.org/eljoujat/eclipseimpexeditor.svg?branch=master)](https://travis-ci.org/eljoujat/eclipseimpexeditor)
 [![Join the chat at https://gitter.im/eljoujat/eclipseimpexeditor](https://badges.gitter.im/eljoujat/eclipseimpexeditor.svg)](https://gitter.im/eljoujat/eclipseimpexeditor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
