@@ -1,2 +1,6 @@
 language: java
+
 script: mvn install -DskipTests=true
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)  -t 6d81192a-cfd2-4a3b-b1f2-136f223885ee
