@@ -16,7 +16,7 @@ See the [Wiki](https://github.com/eljoujat/eclipseimpexeditor/wiki) for full doc
 
 ## Bugs and Feedback
 
-For bugs, questions and discussions please use the [Github Issues](https://github.com/eljoujat/eclipseimpexeditor/issues).
+For bugs,questions and discussions please use the [Github Issues](https://github.com/eljoujat/eclipseimpexeditor/issues).
 
 
 
