@@ -12,16 +12,25 @@
  ******************************************************************************/
 package org.eclipseplugins.impexeditor.core.utils;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -30,7 +39,12 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
@@ -44,203 +58,216 @@ import org.jsoup.select.Elements;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
-
-public class ImpexHttpClient
-{
+public class ImpexHttpClient {
 
 	private static final String USER_AGENT = "Mozilla/5.0";
-	private final static Pattern pattern = Pattern
-			.compile("JSESSIONID=[a-zA-Z0-9_-]*");
+	private final static Pattern pattern = Pattern.compile("JSESSIONID=[a-zA-Z0-9_-]*");
 	private String JSESSIONID;
 	private final String hostName;
 	private static final ILog logger = Activator.getDefault().getLog();
 
-	public ImpexHttpClient(final String hostName)
-	{
+	public ImpexHttpClient(final String hostName) {
 		this.hostName = hostName;
 	}
 
+	private static void disableSSLCertificateChecking() {
 
-	public JsonObject getTypeandAttribute(final String type) throws Exception
-	{
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+				// TODO Auto-generated method stub
+
+			}
+		} };
+
+		try {
+			SSLContext sc = SSLContext.getInstance("TLS");
+
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public JsonObject getTypeandAttribute(final String type) throws Exception {
 		final List<BasicNameValuePair> params = Arrays
-				.asList(new BasicNameValuePair[]
-				{
-						new BasicNameValuePair("type", type) });
+				.asList(new BasicNameValuePair[] { new BasicNameValuePair("type", type) });
 
-		final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/typeAndAttributes", getJsessionId(), params);
-		final BufferedReader rd = new BufferedReader(new InputStreamReader(response
-				.getEntity().getContent()));
+		final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/typeAndAttributes",
+				getJsessionId(), params);
+		final BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 		final JsonObject impexJsonType = JsonObject.readFrom(rd);
 		return impexJsonType;
 	}
 
-	public JsonArray getAllTypes() throws Exception
-	{
+	public JsonArray getAllTypes() throws Exception {
 
 		final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/allTypes", getJsessionId(),
-				Collections.<BasicNameValuePair> emptyList());
-		final BufferedReader rd = new BufferedReader(new InputStreamReader(response
-				.getEntity().getContent()));
+				Collections.<BasicNameValuePair>emptyList());
+		final BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 		final JsonObject impexJsonType = JsonObject.readFrom(rd);
 		final boolean isExist = impexJsonType.get("exists").asBoolean();
 		JsonArray types = null;
-		if (isExist)
-		{
+		if (isExist) {
 			types = impexJsonType.get("types").asArray();
 		}
 		return types;
 	}
 
-
-	private String sendLoginPost()
-	{
+	private String sendLoginPost() {
 
 		final String validJSessionID = getValidJSessionID();
 		String csrfToken = null;
-		try
-		{
+		try {
 			csrfToken = getCSrfToken(validJSessionID);
-		}
-		catch (final IOException e)
-		{
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		final List<BasicNameValuePair> params = Arrays
-				.asList(new BasicNameValuePair[]
-				{
-						new BasicNameValuePair("j_username", "admin"),
-						new BasicNameValuePair("j_password", "nimda"),
-						new BasicNameValuePair("_csrf", csrfToken) });
+				.asList(new BasicNameValuePair[] { new BasicNameValuePair("j_username", "admin"),
+						new BasicNameValuePair("j_password", "nimda"), new BasicNameValuePair("_csrf", csrfToken) });
 		HttpResponse response = null;
 		String jsessionIDToken = null;
-		try
-		{
-			response = makeHttpPostRequest(
-					hostName + "/j_spring_security_check", validJSessionID,
-					params);
-			for (final Header header : response.getAllHeaders())
-			{
-				if ("Set-Cookie".equals(header.getName()))
-				{
+		try {
+			response = makeHttpPostRequest(hostName + "/j_spring_security_check", validJSessionID, params);
+			for (final Header header : response.getAllHeaders()) {
+				if ("Set-Cookie".equals(header.getName())) {
 					final Matcher m = pattern.matcher(header.getValue());
-					if (m.find())
-					{
+					if (m.find()) {
 						jsessionIDToken = m.group(0);
 					}
 				}
 			}
 
-			if (jsessionIDToken != null && jsessionIDToken.split("=").length > 0)
-			{
+			if (jsessionIDToken != null && jsessionIDToken.split("=").length > 0) {
 				jsessionIDToken = jsessionIDToken.split("=")[1];
 			}
 			return jsessionIDToken;
-		}
-		catch (final IOException e)
-		{
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, e!=null?e.getMessage():"IO Exception"));
+		} catch (final IOException e) {
+			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, e != null ? e.getMessage() : "IO Exception"));
 		}
 		return null;
 	}
 
-	public String getJsessionId()
-	{
-		if (JSESSIONID != null)
-		{
+	public String getJsessionId() {
+		if (JSESSIONID != null) {
 			return JSESSIONID;
-		}
-		else
-		{
+		} else {
+			disableSSLCertificateChecking();
 			JSESSIONID = sendLoginPost();
 			return JSESSIONID;
 		}
 	}
 
-	public HttpResponse makeHttpPostRequest(final String actionUrl,
-			final String connectionToken, final List<BasicNameValuePair> params) throws IOException
-	{
+	public HttpResponse makeHttpPostRequest(final String actionUrl, final String connectionToken,
+			final List<BasicNameValuePair> params) throws IOException {
 		final String csrfToken = getCSrfToken(connectionToken);
-		final HttpClient client = new DefaultHttpClient();
-		final HttpPost post = new HttpPost(actionUrl);
-		// add header
-		post.setHeader("User-Agent", USER_AGENT);
-		post.setHeader("X-CSRF-TOKEN", csrfToken);
-		final List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-		for (final BasicNameValuePair nameValuePair : params)
-		{
-			urlParameters.add(nameValuePair);
-		}
-		if (connectionToken != null)
-		{
-			post.setHeader("Cookie", "JSESSIONID=" + connectionToken);
-		}
-		HttpEntity entity;
 		HttpResponse response = null;
-		try
-		{
+		// Disable SSL Validation
+
+		try {
+			SSLContext sslContext = SSLContext.getInstance("SSL");
+			// set up a TrustManager that trusts everything
+			sslContext.init(null, new TrustManager[] { new X509TrustManager() {
+				public X509Certificate[] getAcceptedIssuers() {
+					System.out.println("getAcceptedIssuers =============");
+					return null;
+				}
+
+				public void checkClientTrusted(X509Certificate[] certs, String authType) {
+					System.out.println("checkClientTrusted =============");
+				}
+
+				public void checkServerTrusted(X509Certificate[] certs, String authType) {
+					System.out.println("checkServerTrusted =============");
+				}
+			} }, new SecureRandom());
+
+			SSLSocketFactory sf = new SSLSocketFactory(sslContext);
+			Scheme httpsScheme = new Scheme("https", 443, sf);
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			schemeRegistry.register(httpsScheme);
+			// apache HttpClient version >4.2 should use BasicClientConnectionManager
+			ClientConnectionManager cm = new SingleClientConnManager(schemeRegistry);
+			final HttpClient client = new DefaultHttpClient(cm);
+			final HttpPost post = new HttpPost(actionUrl);
+			// add header
+			post.setHeader("User-Agent", USER_AGENT);
+			post.setHeader("X-CSRF-TOKEN", csrfToken);
+			final List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+			for (final BasicNameValuePair nameValuePair : params) {
+				urlParameters.add(nameValuePair);
+			}
+			if (connectionToken != null) {
+				post.setHeader("Cookie", "JSESSIONID=" + connectionToken);
+			}
+			HttpEntity entity;
+
 			entity = new UrlEncodedFormEntity(urlParameters, "utf-8");
 			post.setEntity(entity);
 
 			response = client.execute(post);
-		}
-		catch (final IOException e)
-		{
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName, e));
+		} catch (final Exception e) {
+			System.out.println("Exceptiop " + e.getMessage());
 		}
 		return response;
 
 	}
 
-	public String validateImpex(final String content)
-	{
+	public String validateImpex(final String content) {
 		final List<BasicNameValuePair> params = Arrays
-				.asList(new BasicNameValuePair[]
-				{
-						new BasicNameValuePair("scriptContent", content), new BasicNameValuePair("validationEnum", "IMPORT_STRICT"),
-						new BasicNameValuePair("encoding", "UTF-8"),
-						new BasicNameValuePair("maxThreads", "4") });
-		try
-		{
-			final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/import", getJsessionId(), params);
-		   //TODO parse html ? or better idea execute a remote groovey script wich will restun a json reult easy to parse
-		}
-		catch (final IOException e)
-		{
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName, e));
+				.asList(new BasicNameValuePair[] { new BasicNameValuePair("scriptContent", content),
+						new BasicNameValuePair("validationEnum", "IMPORT_STRICT"),
+						new BasicNameValuePair("encoding", "UTF-8"), new BasicNameValuePair("maxThreads", "4") });
+		try {
+			final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/import", getJsessionId(),
+					params);
+			// TODO parse html ? or better idea execute a remote groovey script wich will
+			// restun a json reult easy to parse
+		} catch (final IOException e) {
+			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName,
+					e));
 		}
 		return "";
 
 	}
 
-	private String getCSrfToken(final String jSessionid) throws IOException
-	{
-		//<meta name="_csrf" content="c1dee1f7-8c79-43b1-8f3f-767662abc87a" />
-		final Document doc = Jsoup.connect(hostName)
-				.cookie("JSESSIONID", jSessionid)
-				.get();
+	private String getCSrfToken(final String jSessionid) throws IOException {
+		// <meta name="_csrf" content="c1dee1f7-8c79-43b1-8f3f-767662abc87a" />
+		final Document doc = Jsoup.connect(hostName).cookie("JSESSIONID", jSessionid).get();
 		final Elements csrfMetaElt = doc.select("meta[name=_csrf]");
 		final String csrfToken = csrfMetaElt.attr("content");
 		return csrfToken;
 
 	}
 
-	private String getValidJSessionID()
-	{
+	private String getValidJSessionID() {
 		Connection.Response res = null;
-		try
-		{
-			res = Jsoup.connect(hostName)
-					.method(Method.GET)
-					.execute();
+		try {
+			res = Jsoup.connect(hostName).method(Method.GET).execute();
+		} catch (final IOException e) {
+			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName,
+					e));
 		}
-		catch (final IOException e)
-		{
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName, e));
-		}
-		if (res == null)
-		{
+		if (res == null) {
 			return null;
 		}
 		final String sessionId = res.cookie("JSESSIONID"); // you will need to check what the right cookie name is
