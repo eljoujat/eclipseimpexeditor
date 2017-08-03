@@ -34,8 +34,8 @@ import org.eclipseplugins.impexeditor.core.config.ImpexDataDefinition;
  * @see IWorkbenchWindowActionDelegate
  */
 public class RefreschDataAction implements IWorkbenchWindowActionDelegate {
-	private IWorkbenchWindow window;
 	
+	private static final String SUB_TASK_TITLE = "Mettre a jour le dictionnaire des donnes Hybris";
 	private ImpexDataDefinition impexDataDeffinition;
 	/**
 	 * The constructor.
@@ -51,11 +51,11 @@ public class RefreschDataAction implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	public void run(IAction action) {
-		Job syncMedia=new Job("Mettre a jour le dictionnaire des donnes Hybris") {
+		Job syncMedia=new Job(SUB_TASK_TITLE) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-		        monitor.beginTask("", 2);
-		        monitor.subTask("Mettre a jour le dictionnaire des donnes Hybris");
+		        monitor.beginTask(SUB_TASK_TITLE, 2);
+		        monitor.subTask(SUB_TASK_TITLE);
 		        impexDataDeffinition.loadImpexDataDef();
 		        return Status.OK_STATUS;
 			}
@@ -72,6 +72,8 @@ public class RefreschDataAction implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#selectionChanged
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		// Do Nothing
+		return;
 	}
 
 	/**
@@ -80,6 +82,8 @@ public class RefreschDataAction implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#dispose
 	 */
 	public void dispose() {
+		// Do Nothing
+		return;
 	}
 
 	/**
@@ -88,6 +92,7 @@ public class RefreschDataAction implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#init
 	 */
 	public void init(IWorkbenchWindow window) {
-		this.window = window;
+		// Do Nothing
+		return;
 	}
 }
