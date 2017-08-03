@@ -1,3 +1,4 @@
+package org.eclipseplugins.impexeditor.core.utils;
 /*******************************************************************************
  * Copyright 2014 Youssef EL JAOUJAT.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,7 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.eclipseplugins.impexeditor.core.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,16 +39,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.Status;
-import org.eclipseplugins.impexeditor.core.Activator;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
@@ -64,46 +55,13 @@ public class ImpexHttpClient {
 	private final static Pattern pattern = Pattern.compile("JSESSIONID=[a-zA-Z0-9_-]*");
 	private String JSESSIONID;
 	private final String hostName;
-	private static final ILog logger = Activator.getDefault().getLog();
+	private final HttpClient httpClient;
+	private final HttpClientFactory ignoreSSLhttpClientFactory;
 
 	public ImpexHttpClient(final String hostName) {
 		this.hostName = hostName;
-	}
-
-	private static void disableSSLCertificateChecking() {
-
-		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-
-			@Override
-			public X509Certificate[] getAcceptedIssuers() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-				// TODO Auto-generated method stub
-
-			}
-		} };
-
-		try {
-			SSLContext sc = SSLContext.getInstance("TLS");
-
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-
-			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
+		this.ignoreSSLhttpClientFactory = new TrustAllHttpClientFactory();
+		this.httpClient = ignoreSSLhttpClientFactory.buildHttpClient();
 	}
 
 	public JsonObject getTypeandAttribute(final String type) throws Exception {
@@ -121,13 +79,17 @@ public class ImpexHttpClient {
 
 		final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/allTypes", getJsessionId(),
 				Collections.<BasicNameValuePair>emptyList());
-		final BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-		final JsonObject impexJsonType = JsonObject.readFrom(rd);
-		final boolean isExist = impexJsonType.get("exists").asBoolean();
 		JsonArray types = null;
-		if (isExist) {
-			types = impexJsonType.get("types").asArray();
+		if (response.getStatusLine().getStatusCode() == 200) {
+			final BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			final JsonObject impexJsonType = JsonObject.readFrom(rd);
+			final boolean isExist = impexJsonType.get("exists").asBoolean();
+
+			if (isExist) {
+				types = impexJsonType.get("types").asArray();
+			}
 		}
+
 		return types;
 	}
 
@@ -138,7 +100,6 @@ public class ImpexHttpClient {
 		try {
 			csrfToken = getCSrfToken(validJSessionID);
 		} catch (final IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		final List<BasicNameValuePair> params = Arrays
@@ -162,7 +123,6 @@ public class ImpexHttpClient {
 			}
 			return jsessionIDToken;
 		} catch (final IOException e) {
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, e != null ? e.getMessage() : "IO Exception"));
 		}
 		return null;
 	}
@@ -181,30 +141,8 @@ public class ImpexHttpClient {
 			final List<BasicNameValuePair> params) throws IOException {
 		final String csrfToken = getCSrfToken(connectionToken);
 		HttpResponse response = null;
-		// Disable SSL Validation
-
 		try {
-			SSLContext sslContext = SSLContext.getInstance("SSL");
-			// set up a TrustManager that trusts everything
-			sslContext.init(null, new TrustManager[] { new X509TrustManager() {
-				public X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
 
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				}
-
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				}
-			} }, new SecureRandom());
-
-			SSLSocketFactory sf = new SSLSocketFactory(sslContext);
-			Scheme httpsScheme = new Scheme("https", 443, sf);
-			SchemeRegistry schemeRegistry = new SchemeRegistry();
-			schemeRegistry.register(httpsScheme);
-			// apache HttpClient version >4.2 should use BasicClientConnectionManager
-			ClientConnectionManager cm = new SingleClientConnManager(schemeRegistry);
-			final HttpClient client = new DefaultHttpClient(cm);
 			final HttpPost post = new HttpPost(actionUrl);
 			// add header
 			post.setHeader("User-Agent", USER_AGENT);
@@ -221,7 +159,7 @@ public class ImpexHttpClient {
 			entity = new UrlEncodedFormEntity(urlParameters, "utf-8");
 			post.setEntity(entity);
 
-			response = client.execute(post);
+			response = httpClient.execute(post);
 		} catch (final Exception e) {
 			System.out.println("Exceptiop " + e.getMessage());
 		}
@@ -237,11 +175,8 @@ public class ImpexHttpClient {
 		try {
 			final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/import", getJsessionId(),
 					params);
-			// TODO parse html ? or better idea execute a remote groovey script wich will
-			// restun a json reult easy to parse
+			return response.toString();
 		} catch (final IOException e) {
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName,
-					e));
 		}
 		return "";
 
@@ -259,16 +194,52 @@ public class ImpexHttpClient {
 	private String getValidJSessionID() {
 		Connection.Response res = null;
 		try {
+
 			res = Jsoup.connect(hostName).method(Method.GET).execute();
 		} catch (final IOException e) {
-			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Connection refused to " + hostName,
-					e));
+			System.out.println("Exception " + e.getMessage());
 		}
 		if (res == null) {
 			return null;
 		}
 		final String sessionId = res.cookie("JSESSIONID"); // you will need to check what the right cookie name is
 		return sessionId;
+	}
+
+	private static void disableSSLCertificateChecking() {
+
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				// Do Nothing
+				return null;
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+				// Do Nothing
+
+			}
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+				// Do Nothing
+
+			}
+		} };
+
+		try {
+			SSLContext sc = SSLContext.getInstance("TLS");
+
+			sc.init(null, trustAllCerts, new SecureRandom());
+
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
