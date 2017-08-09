@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -131,7 +133,7 @@ public class ImpexHttpClient {
 		if (JSESSIONID != null) {
 			return JSESSIONID;
 		} else {
-			disableSSLCertificateChecking();
+
 			JSESSIONID = sendLoginPost();
 			return JSESSIONID;
 		}
@@ -159,7 +161,7 @@ public class ImpexHttpClient {
 			entity = new UrlEncodedFormEntity(urlParameters, "utf-8");
 			post.setEntity(entity);
 
-			response = httpClient.execute(post);
+			response = ignoreSSLhttpClientFactory.buildHttpClient().execute(post);
 		} catch (final Exception e) {
 			System.out.println("Exceptiop " + e.getMessage());
 		}
@@ -194,7 +196,7 @@ public class ImpexHttpClient {
 	private String getValidJSessionID() {
 		Connection.Response res = null;
 		try {
-
+			disableSSLCertificateChecking();
 			res = Jsoup.connect(hostName).method(Method.GET).execute();
 		} catch (final IOException e) {
 			System.out.println("Exception " + e.getMessage());
@@ -202,11 +204,21 @@ public class ImpexHttpClient {
 		if (res == null) {
 			return null;
 		}
-		final String sessionId = res.cookie("JSESSIONID"); // you will need to check what the right cookie name is
+		final String sessionId = res.cookie("JSESSIONID"); // you will need to
+															// check what the
+															// right cookie name
+															// is
 		return sessionId;
 	}
 
 	private static void disableSSLCertificateChecking() {
+		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+
+			@Override
+			public boolean verify(String hostname, SSLSession session) {
+				return true;
+			}
+		});
 
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
@@ -227,6 +239,7 @@ public class ImpexHttpClient {
 				// Do Nothing
 
 			}
+
 		} };
 
 		try {
