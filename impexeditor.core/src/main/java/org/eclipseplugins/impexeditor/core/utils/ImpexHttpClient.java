@@ -115,7 +115,7 @@ public class ImpexHttpClient {
 				if ("Set-Cookie".equals(header.getName())) {
 					final String[] sessionIdcookies = header.getValue().split(";");
 					if (sessionIdcookies.length>0) {
-						jsessionIDToken =sessionIdcookies[1];
+						jsessionIDToken =sessionIdcookies[0];
 						break;
 					}
 				}
@@ -186,7 +186,8 @@ public class ImpexHttpClient {
 	}
 
 	private String getCSrfToken(final String jSessionid) throws IOException {
-		final Document doc = Jsoup.connect(hostName).cookie("JSESSIONID", jSessionid).get();
+		disableSSLCertificateChecking();
+		final Document doc = Jsoup.connect(hostName).cookie("JSESSIONID", jSessionid).timeout(3000).get();
 		final Elements csrfMetaElt = doc.select("meta[name=_csrf]");
 		final String csrfToken = csrfMetaElt.attr("content");
 		return csrfToken;
