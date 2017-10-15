@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/impexeditor.feature_0.0.0.jar" id="impexeditor.feature" version="0.0.0">
-      <category name="impexeditor"/>
-   </feature>
-   <feature url="features/impexeditor.feature.source_0.0.0.jar" id="impexeditor.feature.source" version="0.0.0">
-      <category name="impexeditor Developer Resources"/>
-   </feature>
    <feature url="features/impexeditor.feature_1.6.1.jar" id="impexeditor.feature" version="1.6.1">
       <category name="Impex"/>
    </feature>

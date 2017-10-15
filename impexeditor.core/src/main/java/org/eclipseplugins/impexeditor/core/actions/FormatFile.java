@@ -54,7 +54,7 @@ public class FormatFile implements IWorkbenchWindowActionDelegate {
 	 */
 	public FormatFile() {
 		final IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		final String hostName = store.getDefaultString(PreferenceConstants.P_HOST_ENDPOINT_STRING);
+		final String hostName = store.getString(PreferenceConstants.P_HOST_ENDPOINT_STRING);
 		this.impexClient = new ImpexHttpClient(hostName);
 		this.impexDataDefinition = new ImpexDataDefinition();
 	}

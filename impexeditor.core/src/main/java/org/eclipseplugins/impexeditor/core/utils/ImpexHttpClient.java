@@ -113,9 +113,10 @@ public class ImpexHttpClient {
 			response = makeHttpPostRequest(hostName + "/j_spring_security_check", validJSessionID, params);
 			for (final Header header : response.getAllHeaders()) {
 				if ("Set-Cookie".equals(header.getName())) {
-					final Matcher m = pattern.matcher(header.getValue());
-					if (m.find()) {
-						jsessionIDToken = m.group(0);
+					final String[] sessionIdcookies = header.getValue().split(";");
+					if (sessionIdcookies.length>0) {
+						jsessionIDToken =sessionIdcookies[0];
+						break;
 					}
 				}
 			}
@@ -163,7 +164,7 @@ public class ImpexHttpClient {
 
 			response = ignoreSSLhttpClientFactory.buildHttpClient().execute(post);
 		} catch (final Exception e) {
-			System.out.println("Exceptiop " + e.getMessage());
+			System.out.println("Exception " + e.getMessage());
 		}
 		return response;
 
@@ -185,8 +186,8 @@ public class ImpexHttpClient {
 	}
 
 	private String getCSrfToken(final String jSessionid) throws IOException {
-		// <meta name="_csrf" content="c1dee1f7-8c79-43b1-8f3f-767662abc87a" />
-		final Document doc = Jsoup.connect(hostName).cookie("JSESSIONID", jSessionid).get();
+		disableSSLCertificateChecking();
+		final Document doc = Jsoup.connect(hostName).cookie("JSESSIONID", jSessionid).timeout(3000).get();
 		final Elements csrfMetaElt = doc.select("meta[name=_csrf]");
 		final String csrfToken = csrfMetaElt.attr("content");
 		return csrfToken;
