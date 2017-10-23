@@ -78,6 +78,27 @@
    </extension>
    
    <extension
+         id="hybrisMarker"
+         name="Impex Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.runtime.impex.impexMarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.ide.markerImageProviders">
+      <imageprovider
+            icon="/icons/warning.gif"
+            id="org.eclipse.core.runtime.impex.imageprovider.pmdMarker"
+            markertype="org.eclipse.core.runtime.impex.impexMarker">
+      </imageprovider>
+   </extension>
+   
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             name="Impex Editor"

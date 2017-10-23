@@ -76,14 +76,14 @@ public class Activator extends AbstractUIPlugin {
 	{
 
 		final Bundle bundle = Platform.getBundle(PLUGIN_ID);
-		final IPath typ_path = new Path("icons/type.gif");
-		final URL url_type = FileLocator.find(bundle, typ_path, null);
-		final ImageDescriptor type_desc = ImageDescriptor.createFromURL(url_type);
-		registry.put(ImpexColorConstants.TYPE_IMAGE_ID, type_desc);
+		final IPath typPath = new Path("icons/type.gif");
+		final URL urlType = FileLocator.find(bundle, typPath, null);
+		final ImageDescriptor typeDesc = ImageDescriptor.createFromURL(urlType);
+		registry.put(ImpexColorConstants.TYPE_IMAGE_ID, typeDesc);
 
-		final IPath keyword_path = new Path("icons/keyword.png");
-		final URL url_keyword = FileLocator.find(bundle, keyword_path, null);
-		final ImageDescriptor keyword_desc = ImageDescriptor.createFromURL(url_keyword);
-		registry.put(ImpexColorConstants.KEYWORD_IMAGE_ID, keyword_desc);
+		final IPath keywordPath = new Path("icons/keyword.png");
+		final URL urlKeyword = FileLocator.find(bundle, keywordPath, null);
+		final ImageDescriptor keywordDesc = ImageDescriptor.createFromURL(urlKeyword);
+		registry.put(ImpexColorConstants.KEYWORD_IMAGE_ID, keywordDesc);
 	}
 }

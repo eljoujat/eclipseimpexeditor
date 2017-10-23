@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipseplugins.impexeditor.core.editor;
 
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.TextAttribute;
@@ -32,131 +31,105 @@ import org.eclipseplugins.impexeditor.core.editor.rules.ImpexWhitespaceDetector;
 
 import com.eclipsesource.json.JsonValue;
 
-
-public class ImpexScanner extends RuleBasedScanner
-{
+public class ImpexScanner extends RuleBasedScanner {
 
 	private String state;
 	private String currentType;
 	IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-	public ImpexScanner(final ColorManager manager, final ImpexDataDefinition impexDataDeffinition)
-	{
+	public ImpexScanner(final ColorManager manager, final ImpexDataDefinition impexDataDeffinition) {
 
 		state = "INIT";
 		final IRule[] rules = new IRule[6];
 		// Add generic whitespace rule.
 		rules[0] = new ImpexWhiteSpaceRule(new ImpexWhitespaceDetector());
 
-
-		final Token default_text = new Token(new TextAttribute(
+		final Token defaultText = new Token(new TextAttribute(
 				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_TEXT_COLOR)), null,
 				SWT.NORMAL));
-		//IMPEX CMD RULES
-		final ImpexKeyWordRule impx_cmd_rule = new ImpexKeyWordRule(new IWordDetector()
-		{
+		// IMPEX CMD RULES
+		final ImpexKeyWordRule impxCmdRule = new ImpexKeyWordRule(new IWordDetector() {
 			@Override
-			public boolean isWordStart(final char c)
-			{
+			public boolean isWordStart(final char c) {
 				return Character.isJavaIdentifierStart(c);
 			}
 
 			@Override
-			public boolean isWordPart(final char c)
-			{
+			public boolean isWordPart(final char c) {
 				return Character.isJavaIdentifierPart(c);
 			}
 		});
 
-
-		final ImpexKeyWordRule impex_modifierRule = new ImpexKeyWordRule(new IWordDetector()
-		{
+		final ImpexKeyWordRule impexModifierRule = new ImpexKeyWordRule(new IWordDetector() {
 			@Override
-			public boolean isWordStart(final char c)
-			{
+			public boolean isWordStart(final char c) {
 				return Character.isJavaIdentifierStart(c);
 			}
 
 			@Override
-			public boolean isWordPart(final char c)
-			{
+			public boolean isWordPart(final char c) {
 				return Character.isJavaIdentifierPart(c);
 			}
 		});
 
-		final ImpexKeyWordRule impexAtomicRule = new ImpexKeyWordRule(new IWordDetector()
-		{
+		final ImpexKeyWordRule impexAtomicRule = new ImpexKeyWordRule(new IWordDetector() {
 			@Override
-			public boolean isWordStart(final char c)
-			{
+			public boolean isWordStart(final char c) {
 				return Character.isJavaIdentifierStart(c);
 			}
 
 			@Override
-			public boolean isWordPart(final char c)
-			{
+			public boolean isWordPart(final char c) {
 				return Character.isJavaIdentifierPart(c);
 			}
 		});
 
-		final ImpexHeaderRule headerTypeRule = new ImpexHeaderRule(new IWordDetector()
-		{
+		final ImpexHeaderRule headerTypeRule = new ImpexHeaderRule(new IWordDetector() {
 			@Override
-			public boolean isWordStart(final char c)
-			{
+			public boolean isWordStart(final char c) {
 				return Character.isJavaIdentifierStart(c);
 			}
 
 			@Override
-			public boolean isWordPart(final char c)
-			{
+			public boolean isWordPart(final char c) {
 				return Character.isJavaIdentifierPart(c);
 			}
 		});
 
-		final Token cmd_keyword = new Token(new TextAttribute(
+		final Token cmdKeyword = new Token(new TextAttribute(
 				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_COMMAND_COLOR)), null,
 				SWT.BOLD));
-		final Token impex_modifier = new Token(new TextAttribute(
+		final Token impexMdifier = new Token(new TextAttribute(
 				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_MODIFIER_COLOR)), null,
 				SWT.BOLD));
-		final Token impex_atomic = new Token(new TextAttribute(
+		final Token impexAtomic = new Token(new TextAttribute(
 				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_ATOMIC_COLOR)), null,
 				SWT.BOLD));
 
-		final Token impex_headerType = new Token(new TextAttribute(
-				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_HEADER_TYPE_COLOR)), null,
-				SWT.BOLD));
+		final Token impexHeaderType = new Token(new TextAttribute(
+				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_HEADER_TYPE_COLOR)),
+				null, SWT.BOLD));
 
-		final Token impex_headerTypeAttribute = new Token(new TextAttribute(
+		final Token impexHeaderTypeAttribute = new Token(new TextAttribute(
 				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_HEADER_TYPE_COLOR))));
 
+		for (final String impex_keyword : ImpexColorConstants.IMPEX_KEYWORDS.keySet()) {
+			if ("impex_cmd".equals(ImpexColorConstants.IMPEX_KEYWORDS.get(impex_keyword))) {
+				impxCmdRule.addWord(impex_keyword, cmdKeyword);
 
-		for (final String impex_keyword : ImpexColorConstants.IMPEX_KEYWORDS.keySet())
-		{
-			if (ImpexColorConstants.IMPEX_KEYWORDS.get(impex_keyword) == "impex_cmd")
-			{
-				impx_cmd_rule.addWord(impex_keyword, cmd_keyword);
+			} else if ("impex_modifier".equals(ImpexColorConstants.IMPEX_KEYWORDS.get(impex_keyword))) {
+				impexModifierRule.addWord(impex_keyword, impexMdifier);
 
-			}
-			else if (ImpexColorConstants.IMPEX_KEYWORDS.get(impex_keyword) == "impex_modifier")
-			{
-				impex_modifierRule.addWord(impex_keyword, impex_modifier);
-
-			}
-			else if (ImpexColorConstants.IMPEX_KEYWORDS.get(impex_keyword) == "impex_atomic")
-			{
-				impexAtomicRule.addWord(impex_keyword, impex_atomic);
+			} else if ("impex_atomic".equals(ImpexColorConstants.IMPEX_KEYWORDS.get(impex_keyword))) {
+				impexAtomicRule.addWord(impex_keyword, impexAtomic);
 			}
 		}
 
-		for (final String headerTyp : impexDataDeffinition.getImpexDataDef().keySet())
-		{
-			headerTypeRule.addWord(headerTyp, impex_headerType);
+		for (final String headerTyp : impexDataDeffinition.getImpexDataDef().keySet()) {
+			headerTypeRule.addWord(headerTyp, impexHeaderType);
 
-			for (final JsonValue string : impexDataDeffinition.getImpexDataDef().get(headerTyp))
-			{
-				headerTypeRule.addWord(string.asString(), impex_headerTypeAttribute);
+			for (final JsonValue string : impexDataDeffinition.getImpexDataDef().get(headerTyp)) {
+				headerTypeRule.addWord(string.asString(), impexHeaderTypeAttribute);
 			}
 		}
 
@@ -164,33 +137,28 @@ public class ImpexScanner extends RuleBasedScanner
 				manager.getColor(PreferenceConverter.getColor(store, PreferenceConstants.IMPEX_VARIABLE_COLOR)), null,
 				SWT.BOLD)), impexDataDeffinition);
 
-		rules[2] = impx_cmd_rule;
-		rules[3] = impex_modifierRule;
+		rules[2] = impxCmdRule;
+		rules[3] = impexModifierRule;
 		rules[4] = impexAtomicRule;
 		rules[5] = headerTypeRule;
-		setDefaultReturnToken(default_text);
+		setDefaultReturnToken(defaultText);
 		setRules(rules);
 	}
 
-	public String getState()
-	{
+	public String getState() {
 		return state;
 	}
 
-	public void setState(final String state)
-	{
+	public void setState(final String state) {
 		this.state = state;
 	}
 
-	public String getCurrentType()
-	{
+	public String getCurrentType() {
 		return currentType;
 	}
 
-	public void setCurrentType(final String currentType)
-	{
+	public void setCurrentType(final String currentType) {
 		this.currentType = currentType;
 	}
-
 
 }

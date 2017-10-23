@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -162,28 +161,24 @@ public class ImpexCompletionProposalComputer implements IContentAssistProcessor
 	@Override
 	public char[] getCompletionProposalAutoActivationCharacters()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public char[] getContextInformationAutoActivationCharacters()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public IContextInformationValidator getContextInformationValidator()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getErrorMessage()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipseplugins.impexeditor.core.actions;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
@@ -23,24 +26,25 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipseplugins.impexeditor.core.Activator;
+import org.eclipseplugins.impexeditor.core.dto.ImpexValidationDto;
 import org.eclipseplugins.impexeditor.core.editor.preferences.PreferenceConstants;
 import org.eclipseplugins.impexeditor.core.utils.ImpexHttpClient;
-
+import org.eclipseplugins.impexeditor.core.utils.MarkerUtil;
 
 /**
- * Our sample action implements workbench action delegate.
- * The action proxy will be created by the workbench and
- * shown in the UI. When the user tries to use the action,
- * this delegate will be created and execution will be
- * delegated to it.
+ * Our sample action implements workbench action delegate. The action proxy will
+ * be created by the workbench and shown in the UI. When the user tries to use
+ * the action, this delegate will be created and execution will be delegated to
+ * it.
+ * 
  * @see IWorkbenchWindowActionDelegate
  */
-public class ValidateImpexAction implements IWorkbenchWindowActionDelegate
-{
+public class ValidateImpexAction implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow window;
 	private final ILog logger = Activator.getDefault().getLog();
 
@@ -49,73 +53,72 @@ public class ValidateImpexAction implements IWorkbenchWindowActionDelegate
 	/**
 	 * The constructor.
 	 */
-	public ValidateImpexAction()
-	{
+	public ValidateImpexAction() {
 
 		final IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		final String hostName = store.getDefaultString(PreferenceConstants.P_HOST_ENDPOINT_STRING);
+		final String hostName = store.getString(PreferenceConstants.P_HOST_ENDPOINT_STRING);
 		this.impexClient = new ImpexHttpClient(hostName);
 	}
 
 	/**
-	 * The action has been activated. The argument of the
-	 * method represents the 'real' action sitting
-	 * in the workbench UI.
+	 * The action has been activated. The argument of the method represents the
+	 * 'real' action sitting in the workbench UI.
+	 * 
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	@Override
-	public void run(final IAction action)
-	{
+	public void run(final IAction action) {
 
 		final IEditorPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		if (!(part instanceof AbstractTextEditor))
-		{
+		if (!(part instanceof AbstractTextEditor)) {
 			return;
 		}
+		
 		final ITextEditor editor = (ITextEditor) part;
 		final IDocumentProvider dp = editor.getDocumentProvider();
 		final IDocument doc = dp.getDocument(editor.getEditorInput());
-		try
-		{
-			impexClient.validateImpex(doc.get(0, doc.getLength()));
-		}
-		catch (final BadLocationException e)
-		{
+		try {
+			ImpexValidationDto validationMessage=impexClient.validateImpex(doc.get(0, doc.getLength()));
+			IResource iresource = ResourceUtil.getResource(editor.getEditorInput());
+			MarkerUtil.removeAllMarkers(iresource);
+			MarkerUtil.addMarker(iresource, validationMessage);
+			
+		} catch (final BadLocationException|CoreException e) {
 
 			logger.log(new Status(Status.ERROR, Activator.PLUGIN_ID, Status.ERROR, "Bad Location Exception", e));
-		}
+			
+		} 
 	}
 
 	/**
-	 * Selection in the workbench has been changed. We
-	 * can change the state of the 'real' action here
-	 * if we want, but this can only happen after
-	 * the delegate has been created.
+	 * Selection in the workbench has been changed. We can change the state of
+	 * the 'real' action here if we want, but this can only happen after the
+	 * delegate has been created.
+	 * 
 	 * @see IWorkbenchWindowActionDelegate#selectionChanged
 	 */
 	@Override
-	public void selectionChanged(final IAction action, final ISelection selection)
-	{
+	public void selectionChanged(final IAction action, final ISelection selection) {
 	}
 
 	/**
-	 * We can use this method to dispose of any system
-	 * resources we previously allocated.
+	 * We can use this method to dispose of any system resources we previously
+	 * allocated.
+	 * 
 	 * @see IWorkbenchWindowActionDelegate#dispose
 	 */
 	@Override
-	public void dispose()
-	{
+	public void dispose() {
 	}
 
 	/**
-	 * We will cache window object in order to
-	 * be able to provide parent shell for the message dialog.
+	 * We will cache window object in order to be able to provide parent shell
+	 * for the message dialog.
+	 * 
 	 * @see IWorkbenchWindowActionDelegate#init
 	 */
 	@Override
-	public void init(final IWorkbenchWindow window)
-	{
+	public void init(final IWorkbenchWindow window) {
 		this.window = window;
 	}
 }

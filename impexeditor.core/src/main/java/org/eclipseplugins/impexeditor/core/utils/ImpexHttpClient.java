@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
@@ -42,6 +41,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.eclipseplugins.impexeditor.core.dto.ImpexValidationDto;
+import org.eclipseplugins.impexeditor.core.dto.ImpexValidationDto.Severity;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Jsoup;
@@ -73,11 +75,10 @@ public class ImpexHttpClient {
 		final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/typeAndAttributes",
 				getJsessionId(), params);
 		final BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-		final JsonObject impexJsonType = JsonObject.readFrom(rd);
-		return impexJsonType;
+		return JsonObject.readFrom(rd);
 	}
 
-	public JsonArray getAllTypes() throws Exception {
+	public JsonArray getAllTypes() throws IOException {
 
 		final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/allTypes", getJsessionId(),
 				Collections.<BasicNameValuePair>emptyList());
@@ -114,8 +115,8 @@ public class ImpexHttpClient {
 			for (final Header header : response.getAllHeaders()) {
 				if ("Set-Cookie".equals(header.getName())) {
 					final String[] sessionIdcookies = header.getValue().split(";");
-					if (sessionIdcookies.length>0) {
-						jsessionIDToken =sessionIdcookies[0];
+					if (sessionIdcookies.length > 0) {
+						jsessionIDToken = sessionIdcookies[0];
 						break;
 					}
 				}
@@ -140,6 +141,18 @@ public class ImpexHttpClient {
 		}
 	}
 
+	public JsonObject runGrooveyScript(String script, Boolean commit) throws IOException {
+
+		final List<BasicNameValuePair> params = Arrays.asList(new BasicNameValuePair[] {
+				new BasicNameValuePair("script", script), new BasicNameValuePair("scriptType", "groovy"),
+				new BasicNameValuePair("commit", commit.toString()) });
+
+		final HttpResponse response = makeHttpPostRequest(hostName + "/console/scripting/execute", getJsessionId(),
+				params);
+		final BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		return JsonObject.readFrom(rd);
+	}
+
 	public HttpResponse makeHttpPostRequest(final String actionUrl, final String connectionToken,
 			final List<BasicNameValuePair> params) throws IOException {
 		final String csrfToken = getCSrfToken(connectionToken);
@@ -150,7 +163,7 @@ public class ImpexHttpClient {
 			// add header
 			post.setHeader("User-Agent", USER_AGENT);
 			post.setHeader("X-CSRF-TOKEN", csrfToken);
-			final List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+			final List<NameValuePair> urlParameters = new ArrayList<>();
 			for (final BasicNameValuePair nameValuePair : params) {
 				urlParameters.add(nameValuePair);
 			}
@@ -170,18 +183,24 @@ public class ImpexHttpClient {
 
 	}
 
-	public String validateImpex(final String content) {
+	public ImpexValidationDto validateImpex(final String content) {
 		final List<BasicNameValuePair> params = Arrays
 				.asList(new BasicNameValuePair[] { new BasicNameValuePair("scriptContent", content),
 						new BasicNameValuePair("validationEnum", "IMPORT_STRICT"),
 						new BasicNameValuePair("encoding", "UTF-8"), new BasicNameValuePair("maxThreads", "4") });
 		try {
-			final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/import", getJsessionId(),
-					params);
-			return response.toString();
+			final HttpResponse response = makeHttpPostRequest(hostName + "/console/impex/import/validate",
+					getJsessionId(), params);
+
+			String html = EntityUtils.toString(response.getEntity());
+			String dataResult = Jsoup.parse(html).select("#validationResultMsg").attr("data-result");
+			String dataLevel = Jsoup.parse(html).select("#validationResultMsg").attr("data-level");
+			Severity severity = "error".equalsIgnoreCase(dataLevel) ? Severity.ERROR : Severity.SUCESS;
+			return new ImpexValidationDto(content,dataResult, severity);
 		} catch (final IOException e) {
+			// DO Nothing
 		}
-		return "";
+		return new ImpexValidationDto(content,"", Severity.SUCESS);
 
 	}
 
