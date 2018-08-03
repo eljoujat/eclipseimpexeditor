@@ -25,8 +25,7 @@ For bugs,questions and discussions please use the [Github Issues](https://github
 
 All kinds of contributions are welcomed :raised_hands:!<br />
 The most basic way to show your support is to star :star2: the project, or to raise issues :speech_balloon:<br />
-But we're not gonna lie to each other, I'd rather you buy me a beer or two :beers:!
 
-[![Paypal](.res/paypal.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3BXL8EBDJALHQ)
+[![Paypal](.res/paypal.png)](https://www.paypal.me/eljoujat)
 
 
