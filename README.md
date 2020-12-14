@@ -1,4 +1,5 @@
 # Eclipse Impex Editor : an eclipse plugin for  SAP-hybris e-commerce platform 
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/eljoujat)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/114f45b914b044bb8dc1c231b7c21ab0)](https://www.codacy.com/app/eljoujat/eclipseimpexeditor?utm_source=github.com&utm_medium=referral&utm_content=eljoujat/eclipseimpexeditor&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/eljoujat/eclipseimpexeditor.svg?branch=master)](https://travis-ci.org/eljoujat/eclipseimpexeditor)
